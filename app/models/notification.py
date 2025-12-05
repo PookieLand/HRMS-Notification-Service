@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 
 from sqlmodel import Field, SQLModel
 
@@ -28,7 +28,7 @@ class Notification(SQLModel, table=True):
     Stores all notification records and their delivery status.
     """
 
-    __tablename__ = "notifications"
+    __tablename__: Any = "notifications"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     employee_id: int = Field(index=True, nullable=False)
@@ -45,9 +45,9 @@ class Notification(SQLModel, table=True):
     retry_count: int = Field(default=0, nullable=False)
     error_message: Optional[str] = Field(default=None, nullable=True)
     created_at: datetime = Field(
-        default_factory=datetime.utcnow, nullable=False, index=True
+        default_factory=datetime.now, nullable=False, index=True
     )
-    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=datetime.now, nullable=False)
     sent_at: Optional[datetime] = Field(default=None, nullable=True)
 
 
