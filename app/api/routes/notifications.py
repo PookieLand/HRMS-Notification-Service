@@ -213,6 +213,7 @@ def auth_check(current_user: CurrentUserDep):
 
 
 class BasicNotificaiton(BaseModel):
+    email_from: str
     recipient_email: str
     subject: str
     body: str
@@ -236,7 +237,7 @@ async def send_basic_notification_test(
     # Add background task to send email
     background_tasks.add_task(
         send_email_message,
-        msg_from="HRMS",
+        msg_from=request.email_from,
         msg_to=request.recipient_email,
         msg_subject=request.subject,
         msg_body=request.body,
