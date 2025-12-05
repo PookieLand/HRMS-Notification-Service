@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
+from pydantic import BaseModel
 from sqlmodel import func, select
 
 from app.api.dependencies import CurrentUserDep, SessionDep
@@ -14,7 +15,7 @@ from app.models.notification import (
     NotificationPublic,
     NotificationStatus,
 )
-from app.services.email import send_notification_email
+from app.services.email import send_email_message, send_notification_email
 
 logger = get_logger(__name__)
 
@@ -209,3 +210,36 @@ def auth_check(current_user: CurrentUserDep):
         "auth": "ok",
         "username": current_user.username,
     }
+
+
+class BasicNotificaiton(BaseModel):
+    recipient_email: str
+    subject: str
+    body: str
+
+
+# Test Notification Endpoint (for testing)
+@router.post("/basic/notify")
+async def send_basic_notification_test(
+    request: BasicNotificaiton, background_tasks: BackgroundTasks
+):
+    """
+    Send an instant notification email without saving to database.
+    Used for testing email functionality.
+
+    Args:
+        request: Instant notification request data
+        background_tasks: FastAPI background tasks
+    """
+    logger.info(f"Sending instant notification to {request.recipient_email}")
+
+    # Add background task to send email
+    background_tasks.add_task(
+        send_email_message,
+        msg_from="HRMS",
+        msg_to=request.recipient_email,
+        msg_subject=request.subject,
+        msg_body=request.body,
+    )
+
+    return {"message": "Instant notification is being sent in the background"}

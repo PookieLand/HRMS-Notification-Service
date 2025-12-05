@@ -1,5 +1,6 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
+# from email.mime.text import MIMEText
+from email.message import EmailMessage
 
 import aiosmtplib
 
@@ -76,3 +77,26 @@ async def send_notification_email(
         bool: True if successful, False otherwise
     """
     return await send_email(to_email, to_name, subject, body, html=False)
+
+
+# This is for test notification
+async def send_email_message(
+    msg_from: str,
+    msg_to: str,
+    msg_subject: str,
+    msg_body: str,
+):
+    message = EmailMessage()
+    message["From"] = msg_from
+    message["To"] = msg_to
+    message["Subject"] = msg_subject
+    message.set_content(msg_body)
+
+    await aiosmtplib.send(
+        message,
+        hostname=settings.SMTP_HOST,
+        port=settings.SMTP_PORT,
+        use_tls=settings.SMTP_USE_TLS,
+        username=settings.SMTP_USER,
+        password=settings.SMTP_APP_PASSWORD,
+    )

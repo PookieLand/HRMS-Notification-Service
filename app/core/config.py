@@ -1,5 +1,7 @@
 from typing import List
 
+from pydantic import SecretStr
+from pydantic.networks import AnyUrl
 from pydantic_settings import BaseSettings
 
 
@@ -25,12 +27,10 @@ class Settings(BaseSettings):
 
     # Email Settings
     SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = "your-email@gmail.com"
-    SMTP_PASSWORD: str = "your-app-password"
-    SMTP_FROM_EMAIL: str = "noreply@hrms.com"
-    SMTP_FROM_NAME: str = "HRMS Notification Service"
-    SMTP_TLS: bool = True
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_APP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
 
     # Notification Settings
     MAX_RETRIES: int = 3
