@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     SMTP_APP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
 
+    EMAIL_SERVICE_NAME: str = "HRMS"
+
     # Notification Settings
     MAX_RETRIES: int = 3
     RETRY_DELAY_SECONDS: int = 300
