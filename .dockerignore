@@ -1,0 +1,7 @@
+.env
+.env.exmaple
+.venv/
+.idea/
+docs/
+k8s/
+__pycache__/
