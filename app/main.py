@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.notifications import router as employees_router
 from app.api.routes.notifications import router as notifications_router
 from app.core.config import settings
 from app.core.database import create_db_and_tables
@@ -46,6 +47,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(employees_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["health"])
