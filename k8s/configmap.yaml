@@ -1,0 +1,89 @@
+# Kubernetes ConfigMap for Notification Service
+# Non-sensitive configuration values for the hybrid email system
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-service-config
+  namespace: hrms
+  labels:
+    app: notification-service
+    component: email
+data:
+  # Application Settings
+  APP_NAME: "Notification Service"
+  APP_VERSION: "1.0.0"
+  DEBUG: "false"
+
+  # Email Provider Configuration
+  # Options: "ses", "smtp", "hybrid"
+  # - ses: Use only Amazon SES
+  # - smtp: Use only Gmail SMTP
+  # - hybrid: Use SES as primary with SMTP as fallback (recommended)
+  EMAIL_PROVIDER: "hybrid"
+
+  # Amazon SES Configuration (Primary)
+  AWS_REGION: "us-east-1"
+  SES_ENABLED: "true"
+
+  # Gmail SMTP Configuration (Fallback)
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "465"
+  SMTP_USE_TLS: "true"
+  SMTP_ENABLED: "true"
+
+  # Email Service Settings
+  EMAIL_SERVICE_NAME: "HRMS"
+
+  # Fallback Configuration
+  ENABLE_FALLBACK: "true"
+  FALLBACK_RETRY_COUNT: "2"
+
+  # Notification Settings
+  MAX_RETRIES: "3"
+  RETRY_DELAY_SECONDS: "300"
+
+  # Database Settings
+  DB_NAME: "hrms_db"
+  DB_HOST: "mysql-service.hrms.svc.cluster.local"
+  DB_PORT: "3306"
+  DB_CHARSET: "utf8"
+
+  # CORS Settings
+  CORS_ORIGINS: "https://hrms.yourdomain.com,https://api.yourdomain.com"
+  CORS_ALLOW_CREDENTIALS: "true"
+
+---
+# ConfigMap for environment-specific overrides (staging)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-service-config-staging
+  namespace: hrms-staging
+  labels:
+    app: notification-service
+    component: email
+    environment: staging
+data:
+  DEBUG: "true"
+  EMAIL_PROVIDER: "smtp"
+  SES_ENABLED: "false"
+  CORS_ORIGINS: "https://staging.hrms.yourdomain.com,http://localhost:3000"
+
+---
+# ConfigMap for environment-specific overrides (production)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-service-config-production
+  namespace: hrms-production
+  labels:
+    app: notification-service
+    component: email
+    environment: production
+data:
+  DEBUG: "false"
+  EMAIL_PROVIDER: "hybrid"
+  SES_ENABLED: "true"
+  AWS_REGION: "us-east-1"
+  CORS_ORIGINS: "https://hrms.yourdomain.com,https://app.yourdomain.com"

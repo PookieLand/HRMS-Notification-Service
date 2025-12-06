@@ -1,6 +1,14 @@
 """
 Email Service Module
 Provides async email sending functionality with support for plain text and HTML templates.
+
+This module maintains backward compatibility while supporting the hybrid email system
+with Amazon SES (primary) and Gmail SMTP (fallback) for Kubernetes deployments.
+
+Set EMAIL_PROVIDER in config to control behavior:
+- "smtp": Use only Gmail SMTP (legacy behavior)
+- "ses": Use only Amazon SES
+- "hybrid": Use SES as primary with SMTP as fallback (recommended for production)
 """
 
 from email.message import EmailMessage
@@ -15,6 +23,19 @@ from app.services.template_service import EmailType, get_template_service
 logger = get_logger(__name__)
 
 
+# Check if hybrid email service should be used
+def _use_hybrid_service() -> bool:
+    """Determine if the hybrid email service should be used."""
+    return settings.EMAIL_PROVIDER in ("ses", "hybrid") and settings.ses_configured
+
+
+def _get_hybrid_service():
+    """Lazy import and get hybrid email service."""
+    from app.services.hybrid_email import get_hybrid_email_service
+
+    return get_hybrid_email_service()
+
+
 async def send_email(
     to_email: str,
     to_name: str,
@@ -24,6 +45,9 @@ async def send_email(
 ) -> bool:
     """
     Send an email asynchronously.
+
+    Uses the hybrid email service (SES + SMTP fallback) when configured,
+    otherwise falls back to direct SMTP.
 
     Args:
         to_email: Recipient email address
@@ -35,6 +59,22 @@ async def send_email(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_email(
+                to_email=to_email,
+                to_name=to_name,
+                subject=subject,
+                body=body,
+                html=html,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(f"Hybrid service failed, falling back to SMTP: {e}")
+
+    # Direct SMTP (legacy behavior or fallback)
     try:
         message = EmailMessage()
         message["Subject"] = subject
@@ -56,7 +96,7 @@ async def send_email(
             password=settings.SMTP_APP_PASSWORD,
         )
 
-        logger.info(f"Email sent successfully to {to_email}")
+        logger.info(f"Email sent successfully to {to_email} via SMTP")
         return True
 
     except Exception as e:
@@ -127,6 +167,10 @@ async def send_templated_email(
     """
     Send an HTML email using a predefined template.
 
+    Uses the hybrid email service (SES + SMTP fallback) when configured,
+    otherwise falls back to direct SMTP. Templates are rendered using
+    Jinja2 and work identically with both providers.
+
     Args:
         to_email: Recipient email address
         subject: Email subject
@@ -137,6 +181,24 @@ async def send_templated_email(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_templated_email(
+                to_email=to_email,
+                subject=subject,
+                email_type=email_type,
+                context=context,
+                sender_name=sender_name,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(
+                f"Hybrid service failed for templated email, falling back to SMTP: {e}"
+            )
+
+    # Direct SMTP (legacy behavior or fallback)
     try:
         template_service = get_template_service()
 
@@ -173,7 +235,7 @@ async def send_templated_email(
         )
 
         logger.info(
-            f"Templated email ({email_type.value}) sent successfully to {to_email}"
+            f"Templated email ({email_type.value}) sent successfully to {to_email} via SMTP"
         )
         return True
 
@@ -195,6 +257,8 @@ async def send_welcome_email(
     """
     Send a welcome email to a new user.
 
+    Uses the same Jinja2 templates regardless of email provider (SES or SMTP).
+
     Args:
         to_email: Recipient email address
         username: User's display name
@@ -208,6 +272,27 @@ async def send_welcome_email(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service directly if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_welcome_email(
+                to_email=to_email,
+                username=username,
+                employee_id=employee_id,
+                department=department,
+                role=role,
+                start_date=start_date,
+                action_url=action_url,
+                company_name=company_name,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(
+                f"Hybrid service failed for welcome email, falling back to SMTP: {e}"
+            )
+
+    # Legacy SMTP path
     context = {
         "username": username,
         "email": to_email,
@@ -242,6 +327,8 @@ async def send_notification(
     """
     Send a general notification email.
 
+    Uses the same Jinja2 templates regardless of email provider (SES or SMTP).
+
     Args:
         to_email: Recipient email address
         username: User's display name
@@ -255,6 +342,27 @@ async def send_notification(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service directly if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_notification(
+                to_email=to_email,
+                username=username,
+                title=title,
+                message=message,
+                notification_title=notification_title,
+                details=details,
+                action_url=action_url,
+                action_text=action_text,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(
+                f"Hybrid service failed for notification, falling back to SMTP: {e}"
+            )
+
+    # Legacy SMTP path
     context = {
         "username": username,
         "title": title,
@@ -288,6 +396,8 @@ async def send_reminder(
     """
     Send a reminder email.
 
+    Uses the same Jinja2 templates regardless of email provider (SES or SMTP).
+
     Args:
         to_email: Recipient email address
         username: User's display name
@@ -303,6 +413,29 @@ async def send_reminder(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service directly if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_reminder(
+                to_email=to_email,
+                username=username,
+                subject=subject,
+                reminder_title=reminder_title,
+                reminder_message=reminder_message,
+                due_date=due_date,
+                urgency=urgency,
+                details=details,
+                action_url=action_url,
+                action_text=action_text,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(
+                f"Hybrid service failed for reminder, falling back to SMTP: {e}"
+            )
+
+    # Legacy SMTP path
     context = {
         "username": username,
         "subject": subject,
@@ -336,6 +469,8 @@ async def send_congratulations(
     """
     Send a congratulations email.
 
+    Uses the same Jinja2 templates regardless of email provider (SES or SMTP).
+
     Args:
         to_email: Recipient email address
         recipient_name: Recipient's display name
@@ -349,6 +484,27 @@ async def send_congratulations(
     Returns:
         bool: True if successful, False otherwise
     """
+    # Use hybrid service directly if configured
+    if _use_hybrid_service():
+        try:
+            service = _get_hybrid_service()
+            result = await service.send_congratulations(
+                to_email=to_email,
+                recipient_name=recipient_name,
+                message=message,
+                achievement=achievement,
+                details=details,
+                action_url=action_url,
+                action_text=action_text,
+                closing_message=closing_message,
+            )
+            return result.success
+        except Exception as e:
+            logger.warning(
+                f"Hybrid service failed for congratulations, falling back to SMTP: {e}"
+            )
+
+    # Legacy SMTP path
     context = {
         "recipient_name": recipient_name,
         "message": message,
@@ -365,3 +521,32 @@ async def send_congratulations(
         email_type=EmailType.CONGRATULATIONS,
         context=context,
     )
+
+
+async def get_email_health_status() -> Dict[str, Any]:
+    """
+    Get health status of email providers.
+
+    Returns:
+        Dictionary with health information for configured providers
+    """
+    if _use_hybrid_service():
+        service = _get_hybrid_service()
+        return await service.health_check()
+
+    # Legacy SMTP-only status
+    return {
+        "primary_provider": "smtp",
+        "fallback_provider": None,
+        "fallback_enabled": False,
+        "providers": {
+            "smtp": {
+                "status": "configured"
+                if settings.smtp_configured
+                else "not_configured",
+                "configured": settings.smtp_configured,
+                "host": settings.SMTP_HOST,
+                "port": settings.SMTP_PORT,
+            }
+        },
+    }

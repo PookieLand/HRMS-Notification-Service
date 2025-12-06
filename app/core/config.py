@@ -25,12 +25,28 @@ class Settings(BaseSettings):
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]
 
-    # Email Settings
+    # Email Provider Settings
+    # Options: "ses", "smtp", "hybrid"
+    # - "ses": Use only Amazon SES
+    # - "smtp": Use only Gmail SMTP
+    # - "hybrid": Use SES as primary with SMTP as fallback
+    EMAIL_PROVIDER: str = "hybrid"
+
+    # Amazon SES Settings (Primary for Kubernetes deployment)
+    AWS_REGION: str = "us-east-1"
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    SES_SENDER_EMAIL: str = ""  # Must be verified in SES
+    SES_CONFIGURATION_SET: str = ""  # Optional: for tracking/metrics
+    SES_ENABLED: bool = True
+
+    # Gmail SMTP Settings (Secondary/Fallback)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 465
     SMTP_USER: str = ""
     SMTP_APP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
+    SMTP_ENABLED: bool = True
 
     EMAIL_SERVICE_NAME: str = "HRMS"
 
@@ -38,12 +54,49 @@ class Settings(BaseSettings):
     MAX_RETRIES: int = 3
     RETRY_DELAY_SECONDS: int = 300
 
+    # Fallback Settings
+    ENABLE_FALLBACK: bool = True  # Enable fallback to secondary provider
+    FALLBACK_RETRY_COUNT: int = 2  # Number of retries before falling back
+
     @property
     def cors_origins_list(self) -> List[str]:
         """Parse CORS_ORIGINS from comma-separated string."""
         if isinstance(self.CORS_ORIGINS, str):
             return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
         return [self.CORS_ORIGINS]
+
+    @property
+    def use_ses_primary(self) -> bool:
+        """Check if SES should be used as primary provider."""
+        return self.EMAIL_PROVIDER in ("ses", "hybrid") and self.SES_ENABLED
+
+    @property
+    def use_smtp_primary(self) -> bool:
+        """Check if SMTP should be used as primary provider."""
+        return self.EMAIL_PROVIDER == "smtp" and self.SMTP_ENABLED
+
+    @property
+    def has_fallback(self) -> bool:
+        """Check if fallback is available and enabled."""
+        if not self.ENABLE_FALLBACK:
+            return False
+        if self.EMAIL_PROVIDER == "hybrid":
+            return self.SMTP_ENABLED
+        return False
+
+    @property
+    def ses_configured(self) -> bool:
+        """Check if SES is properly configured."""
+        return bool(
+            self.AWS_ACCESS_KEY_ID
+            and self.AWS_SECRET_ACCESS_KEY
+            and self.SES_SENDER_EMAIL
+        )
+
+    @property
+    def smtp_configured(self) -> bool:
+        """Check if SMTP is properly configured."""
+        return bool(self.SMTP_USER and self.SMTP_APP_PASSWORD)
 
     # Asgardeo OAuth2 Settings
     ASGARDEO_ORG: str = ""  # REQUIRED: Must be set in .env file

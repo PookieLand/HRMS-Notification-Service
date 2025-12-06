@@ -1,0 +1,65 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SESSendEmail",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+        "ses:SendTemplatedEmail"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ses:FromAddress": "${SES_SENDER_EMAIL}"
+        }
+      }
+    },
+    {
+      "Sid": "SESGetQuota",
+      "Effect": "Allow",
+      "Action": [
+        "ses:GetSendQuota",
+        "ses:GetSendStatistics"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SESVerifyIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "ses:VerifyEmailIdentity",
+        "ses:GetIdentityVerificationAttributes"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SESListIdentities",
+      "Effect": "Allow",
+      "Action": [
+        "ses:ListIdentities",
+        "ses:ListVerifiedEmailAddresses"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SESConfigurationSets",
+      "Effect": "Allow",
+      "Action": [
+        "ses:GetConfigurationSet",
+        "ses:GetConfigurationSetEventDestinations"
+      ],
+      "Resource": "arn:aws:ses:*:${AWS_ACCOUNT_ID}:configuration-set/*"
+    },
+    {
+      "Sid": "SESTemplates",
+      "Effect": "Allow",
+      "Action": [
+        "ses:GetTemplate",
+        "ses:ListTemplates"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

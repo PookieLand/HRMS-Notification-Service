@@ -1,0 +1,256 @@
+# Kubernetes Deployment for Notification Service
+# Hybrid email system with Amazon SES (primary) and Gmail SMTP (fallback)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: hrms
+  labels:
+    app: notification-service
+    component: email
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        component: email
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: notification-service-sa
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: notification-service
+          image: your-registry.io/hrms/notification-service:latest
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+
+          # Environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: notification-service-config
+
+          # Environment variables from Secrets
+          env:
+            # Amazon SES Credentials
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: aws-access-key-id
+                  optional: true  # Optional if using IRSA
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: aws-secret-access-key
+                  optional: true  # Optional if using IRSA
+            - name: SES_SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: ses-sender-email
+            - name: SES_CONFIGURATION_SET
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: ses-configuration-set
+                  optional: true
+
+            # Gmail SMTP Credentials (Fallback)
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: smtp-user
+            - name: SMTP_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: smtp-app-password
+
+            # Database Credentials
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: db-password
+
+            # Asgardeo OAuth2
+            - name: ASGARDEO_ORG
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: asgardeo-org
+            - name: ASGARDEO_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secrets
+                  key: asgardeo-client-id
+
+          # Resource limits and requests
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          # Health checks
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+
+          # Security context
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          # Volume mounts for templates (if needed for external templates)
+          volumeMounts:
+            - name: templates-volume
+              mountPath: /app/app/templates
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+
+      # Volumes
+      volumes:
+        - name: templates-volume
+          configMap:
+            name: notification-service-templates
+            optional: true
+        - name: tmp-volume
+          emptyDir: {}
+
+      # Pod scheduling
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: notification-service
+                topologyKey: kubernetes.io/hostname
+
+      # Tolerations (if needed for specific node pools)
+      tolerations: []
+
+      # Node selector (if needed)
+      nodeSelector: {}
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: notification-service-hpa
+  namespace: hrms
+  labels:
+    app: notification-service
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: notification-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: notification-service-pdb
+  namespace: hrms
+  labels:
+    app: notification-service
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: notification-service

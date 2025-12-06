@@ -3,27 +3,24 @@ from typing import Any, Dict
 from fastapi import APIRouter, BackgroundTasks
 
 from app.api.dependencies import CurrentUserDep
-
 from app.core.logging import get_logger
-
+from app.models.notifications import (
+    BasicNotification,
+    CongratulationsEmailRequest,
+    NotificationEmailRequest,
+    ReminderEmailRequest,
+    TemplatedEmailRequest,
+    TemplatedEmailResponse,
+    WelcomeEmailRequest,
+)
 from app.services.email import (
+    get_email_health_status,
     send_congratulations,
     send_email_message,
     send_notification,
     send_reminder,
     send_templated_email,
     send_welcome_email,
-)
-
-from app.models.notifications import (
-    BasicNotification,
-    TemplatedEmailResponse,
-    TemplatedEmailRequest,
-    WelcomeEmailRequest,
-    ReminderEmailRequest,
-    NotificationEmailRequest,
-    CongratulationsEmailRequest,
-
 )
 from app.services.template_service import EmailType
 
@@ -43,6 +40,23 @@ def auth_check(current_user: CurrentUserDep):
         "auth": "ok",
         "username": current_user.username,
     }
+
+
+@router.get("/health/providers")
+async def get_email_provider_health():
+    """
+    Get health status of all configured email providers.
+
+    Returns information about:
+    - Primary email provider (SES or SMTP)
+    - Fallback provider status
+    - Provider-specific metrics (e.g., SES quota)
+
+    Useful for monitoring and debugging email delivery issues.
+    """
+    logger.info("Checking email provider health status")
+    health_status = await get_email_health_status()
+    return health_status
 
 
 @router.post("/basic/notify")
@@ -68,8 +82,6 @@ async def send_basic_notification_test(
     )
 
     return {"message": "Instant notification is being sent in the background"}
-
-
 
 
 async def send_templated_email_background(
@@ -193,8 +205,6 @@ async def send_templated_notification(
     )
 
 
-
-
 @router.post("/send/welcome")
 async def send_welcome_notification(
     request: WelcomeEmailRequest,
@@ -226,8 +236,6 @@ async def send_welcome_notification(
         "message": "Welcome email is being sent",
         "recipient": request.recipient_email,
     }
-
-
 
 
 @router.post("/send/reminder")
@@ -265,8 +273,6 @@ async def send_reminder_notification(
     }
 
 
-
-
 @router.post("/send/notification")
 async def send_general_notification(
     request: NotificationEmailRequest,
@@ -298,8 +304,6 @@ async def send_general_notification(
         "message": "Notification email is being sent",
         "recipient": request.recipient_email,
     }
-
-
 
 
 @router.post("/send/congratulations")
