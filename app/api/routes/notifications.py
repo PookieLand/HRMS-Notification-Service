@@ -192,7 +192,6 @@ async def send_templated_notification(
         send_templated_email_background,
         email_type=request.email_type,
         recipient_email=request.recipient_email,
-        recipient_name=request.recipient_name,
         subject=request.subject,
         context=context,
     )
