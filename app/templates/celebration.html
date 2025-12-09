@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>{{ celebration_title | default('Celebration!') }}</title>
+        <!--[if mso]>
+            <noscript>
+                <xml>
+                    <o:OfficeDocumentSettings>
+                        <o:PixelsPerInch>96</o:PixelsPerInch>
+                    </o:OfficeDocumentSettings>
+                </xml>
+            </noscript>
+        <![endif]-->
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap");
+        </style>
+    </head>
+    <body
+        style="
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f;
+            font-family:
+                'DM Sans',
+                -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                Roboto,
+                sans-serif;
+        "
+    >
+        <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #0f0f0f"
+        >
+            <tr>
+                <td align="center" style="padding: 40px 20px">
+                    <table
+                        role="presentation"
+                        width="600"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                            background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+                            border-radius: 24px;
+                            overflow: hidden;
+                            border: 1px solid #2a2a2a;
+                        "
+                    >
+                        <!-- Decorative Top Banner -->
+                        <tr>
+                            <td
+                                style="
+                                    height: 140px;
+                                    background: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #f59e0b 100%);
+                                    position: relative;
+                                "
+                            >
+                                <table role="presentation" width="100%" height="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center" valign="middle">
+                                            <!-- Celebration Icons -->
+                                            <span style="font-size: 48px; letter-spacing: 16px">
+                                                {% if celebration_type == 'birthday' %}
+                                                🎂 🎈 🎉
+                                                {% elif celebration_type == 'anniversary' %}
+                                                🏆 ⭐ 🎊
+                                                {% else %}
+                                                ✨ 🎉 ✨
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Main Content Area -->
+                        <tr>
+                            <td style="padding: 40px 48px 24px 48px">
+                                <!-- Celebration Badge -->
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center" style="padding-bottom: 24px">
+                                            <span
+                                                style="
+                                                    display: inline-block;
+                                                    padding: 8px 20px;
+                                                    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(219, 39, 119, 0.2));
+                                                    border: 1px solid rgba(124, 58, 237, 0.3);
+                                                    border-radius: 50px;
+                                                    color: #c4b5fd;
+                                                    font-size: 12px;
+                                                    font-weight: 600;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 2px;
+                                                "
+                                            >
+                                                {% if celebration_type == 'birthday' %}
+                                                🎂 Happy Birthday
+                                                {% elif celebration_type == 'anniversary' %}
+                                                🏆 Work Anniversary
+                                                {% else %}
+                                                ✨ Celebration
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Main Heading -->
+                                <h1
+                                    style="
+                                        font-family: 'Playfair Display', Georgia, serif;
+                                        color: #ffffff;
+                                        font-size: 36px;
+                                        font-weight: 700;
+                                        text-align: center;
+                                        margin: 0 0 8px 0;
+                                        letter-spacing: -0.5px;
+                                        line-height: 1.2;
+                                    "
+                                >
+                                    {% if celebration_type == 'birthday' %}
+                                    Happy Birthday, {{ recipient_name | default('Team Member') }}!
+                                    {% elif celebration_type == 'anniversary' %}
+                                    Congratulations, {{ recipient_name | default('Team Member') }}!
+                                    {% else %}
+                                    {{ achievement | default('Congratulations!') }}
+                                    {% endif %}
+                                </h1>
+
+                                {% if celebration_type == 'anniversary' and years_of_service %}
+                                <p
+                                    style="
+                                        color: #a78bfa;
+                                        font-family: 'Playfair Display', Georgia, serif;
+                                        font-size: 20px;
+                                        font-style: italic;
+                                        text-align: center;
+                                        margin: 0 0 24px 0;
+                                    "
+                                >
+                                    Celebrating {{ years_of_service }} {% if years_of_service == 1 %}Year{% else %}Years{% endif %} of Excellence
+                                </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- Message Card -->
+                        <tr>
+                            <td style="padding: 0 48px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background: linear-gradient(135deg, #1e1e1e 0%, #171717 100%);
+                                        border-radius: 16px;
+                                        border: 1px solid #2a2a2a;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 32px">
+                                            <p
+                                                style="
+                                                    color: #e5e5e5;
+                                                    font-size: 16px;
+                                                    line-height: 1.8;
+                                                    margin: 0;
+                                                    text-align: center;
+                                                "
+                                            >
+                                                {{ message | default("Wishing you all the best on this special day! Your presence makes our team stronger and our workplace brighter.") }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Milestone/Details Section -->
+                        {% if details %}
+                        <tr>
+                            <td style="padding: 24px 48px 0 48px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #171717;
+                                        border-radius: 12px;
+                                        border: 1px solid #262626;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 24px">
+                                            <p
+                                                style="
+                                                    color: #f472b6;
+                                                    font-size: 11px;
+                                                    font-weight: 600;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 1.5px;
+                                                    margin: 0 0 16px 0;
+                                                    text-align: center;
+                                                "
+                                            >
+                                                {% if celebration_type == 'anniversary' %}
+                                                Your Journey With Us
+                                                {% else %}
+                                                Celebration Details
+                                                {% endif %}
+                                            </p>
+
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                {% for key, value in details.items() %}
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            padding: 12px 0;
+                                                            {% if not loop.last %}border-bottom: 1px solid #262626;{% endif %}
+                                                        "
+                                                    >
+                                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td style="width: 50%">
+                                                                    <span style="color: #737373; font-size: 14px">{{ key }}</span>
+                                                                </td>
+                                                                <td style="width: 50%; text-align: right">
+                                                                    <span style="color: #ffffff; font-size: 14px; font-weight: 500">{{ value }}</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- Closing Message -->
+                        <tr>
+                            <td style="padding: 32px 48px 16px 48px">
+                                <p
+                                    style="
+                                        color: #a3a3a3;
+                                        font-size: 15px;
+                                        line-height: 1.7;
+                                        margin: 0;
+                                        text-align: center;
+                                    "
+                                >
+                                    {{ closing_message | default("Thank you for being an amazing part of our team. Here's to many more wonderful moments together!") }}
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Decorative Divider -->
+                        <tr>
+                            <td align="center" style="padding: 16px 48px">
+                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td
+                                            style="
+                                                width: 40px;
+                                                height: 2px;
+                                                background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+                                            "
+                                        ></td>
+                                        <td style="padding: 0 16px">
+                                            <span style="color: #7c3aed; font-size: 16px">★</span>
+                                        </td>
+                                        <td
+                                            style="
+                                                width: 40px;
+                                                height: 2px;
+                                                background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+                                            "
+                                        ></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- CTA Button (Optional) -->
+                        {% if action_url %}
+                        <tr>
+                            <td align="center" style="padding: 8px 48px 32px 48px">
+                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td
+                                            style="
+                                                background: linear-gradient(135deg, #7c3aed, #db2777);
+                                                border-radius: 12px;
+                                                text-align: center;
+                                            "
+                                        >
+                                            <a
+                                                href="{{ action_url }}"
+                                                style="
+                                                    display: inline-block;
+                                                    padding: 14px 36px;
+                                                    color: #ffffff;
+                                                    font-size: 15px;
+                                                    font-weight: 600;
+                                                    text-decoration: none;
+                                                "
+                                            >
+                                                {{ action_text | default('View Message') }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- Team Signature -->
+                        <tr>
+                            <td style="padding: 0 48px 32px 48px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1));
+                                        border-radius: 12px;
+                                        border: 1px solid rgba(124, 58, 237, 0.2);
+                                    "
+                                >
+                                    <tr>
+                                        <td align="center" style="padding: 24px">
+                                            <p style="color: #c4b5fd; font-size: 14px; margin: 0 0 4px 0; font-weight: 500">
+                                                With warm wishes,
+                                            </p>
+                                            <p
+                                                style="
+                                                    font-family: 'Playfair Display', Georgia, serif;
+                                                    color: #ffffff;
+                                                    font-size: 18px;
+                                                    margin: 0;
+                                                    font-style: italic;
+                                                "
+                                            >
+                                                {{ sender_name | default('The Entire Team') }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td
+                                style="
+                                    background-color: #0a0a0a;
+                                    padding: 24px 48px;
+                                    border-top: 1px solid #1f1f1f;
+                                "
+                            >
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center">
+                                            <p style="color: #525252; font-size: 12px; margin: 0 0 8px 0">
+                                                {{ company_name | default('HRMS Cloud Platform') }}
+                                            </p>
+                                            <p style="color: #404040; font-size: 11px; margin: 0">
+                                                © {{ year }} All rights reserved
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>You're Invited to Join {{ company_name | default('HRMS Cloud') }}</title>
+        <!--[if mso]>
+            <noscript>
+                <xml>
+                    <o:OfficeDocumentSettings>
+                        <o:PixelsPerInch>96</o:PixelsPerInch>
+                    </o:OfficeDocumentSettings>
+                </xml>
+            </noscript>
+        <![endif]-->
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+        </style>
+    </head>
+    <body
+        style="
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            font-family:
+                'Space Grotesk',
+                -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                Roboto,
+                sans-serif;
+        "
+    >
+        <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #0a0a0a"
+        >
+            <tr>
+                <td align="center" style="padding: 40px 20px">
+                    <table
+                        role="presentation"
+                        width="600"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                            background-color: #111111;
+                            border-radius: 16px;
+                            overflow: hidden;
+                            border: 1px solid #262626;
+                        "
+                    >
+                        <!-- Header with gradient accent -->
+                        <tr>
+                            <td style="height: 4px; background: linear-gradient(90deg, #10b981, #059669, #047857)"></td>
+                        </tr>
+
+                        <!-- Logo Section -->
+                        <tr>
+                            <td align="center" style="padding: 40px 40px 20px 40px">
+                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td
+                                            style="
+                                                width: 56px;
+                                                height: 56px;
+                                                background: linear-gradient(135deg, #10b981, #059669);
+                                                border-radius: 12px;
+                                                text-align: center;
+                                                vertical-align: middle;
+                                            "
+                                        >
+                                            <span style="font-size: 28px; color: #ffffff; font-weight: 700">✉</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Main Content -->
+                        <tr>
+                            <td style="padding: 0 40px">
+                                <h1
+                                    style="
+                                        color: #ffffff;
+                                        font-size: 28px;
+                                        font-weight: 700;
+                                        text-align: center;
+                                        margin: 0 0 16px 0;
+                                        letter-spacing: -0.5px;
+                                    "
+                                >
+                                    You're Invited to Join Us!
+                                </h1>
+                                <p
+                                    style="
+                                        color: #a3a3a3;
+                                        font-size: 16px;
+                                        text-align: center;
+                                        margin: 0 0 32px 0;
+                                        line-height: 1.6;
+                                    "
+                                >
+                                    {{ company_name | default('HRMS Cloud Platform') }} has invited you to join the team
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Greeting Card -->
+                        <tr>
+                            <td style="padding: 0 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+                                        border-radius: 12px;
+                                        border: 1px solid #262626;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 32px">
+                                            <p style="color: #e5e5e5; font-size: 18px; margin: 0 0 16px 0; font-weight: 500">
+                                                Hello {{ username | default('Future Team Member') }},
+                                            </p>
+                                            <p style="color: #a3a3a3; font-size: 15px; line-height: 1.7; margin: 0">
+                                                {{ message | default("We're excited to welcome you aboard! You've been selected to join our team, and we can't wait to have you as part of our organization. Please complete your onboarding to get started.") }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Position Details -->
+                        <tr>
+                            <td style="padding: 24px 40px 0 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #171717;
+                                        border-radius: 12px;
+                                        border: 1px solid #262626;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 24px">
+                                            <p
+                                                style="
+                                                    color: #10b981;
+                                                    font-size: 12px;
+                                                    font-weight: 600;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 1px;
+                                                    margin: 0 0 16px 0;
+                                                "
+                                            >
+                                                Your Position Details
+                                            </p>
+
+                                            {% if role or job_title %}
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="padding: 8px 0; border-bottom: 1px solid #262626">
+                                                        <span style="color: #737373; font-size: 14px">Role</span>
+                                                    </td>
+                                                    <td style="padding: 8px 0; border-bottom: 1px solid #262626; text-align: right">
+                                                        <span style="color: #ffffff; font-size: 14px; font-weight: 500">{{ job_title | default(role) }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                            {% if department %}
+                                                <tr>
+                                                    <td style="padding: 8px 0; border-bottom: 1px solid #262626">
+                                                        <span style="color: #737373; font-size: 14px">Department</span>
+                                                    </td>
+                                                    <td style="padding: 8px 0; border-bottom: 1px solid #262626; text-align: right">
+                                                        <span style="color: #ffffff; font-size: 14px; font-weight: 500">{{ department }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                            {% if start_date %}
+                                                <tr>
+                                                    <td style="padding: 8px 0">
+                                                        <span style="color: #737373; font-size: 14px">Start Date</span>
+                                                    </td>
+                                                    <td style="padding: 8px 0; text-align: right">
+                                                        <span style="color: #ffffff; font-size: 14px; font-weight: 500">{{ start_date }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- What's Next Section -->
+                        <tr>
+                            <td style="padding: 24px 40px 0 40px">
+                                <p
+                                    style="
+                                        color: #ffffff;
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        margin: 0 0 16px 0;
+                                    "
+                                >
+                                    What's Next?
+                                </p>
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td style="padding: 8px 0">
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            width: 28px;
+                                                            height: 28px;
+                                                            background-color: #10b981;
+                                                            border-radius: 50%;
+                                                            text-align: center;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        <span style="color: #ffffff; font-size: 12px; font-weight: 700">1</span>
+                                                    </td>
+                                                    <td style="padding-left: 12px">
+                                                        <span style="color: #e5e5e5; font-size: 14px">Click the button below to start your onboarding</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0">
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            width: 28px;
+                                                            height: 28px;
+                                                            background-color: #059669;
+                                                            border-radius: 50%;
+                                                            text-align: center;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        <span style="color: #ffffff; font-size: 12px; font-weight: 700">2</span>
+                                                    </td>
+                                                    <td style="padding-left: 12px">
+                                                        <span style="color: #e5e5e5; font-size: 14px">Complete your profile information</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0">
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            width: 28px;
+                                                            height: 28px;
+                                                            background-color: #047857;
+                                                            border-radius: 50%;
+                                                            text-align: center;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        <span style="color: #ffffff; font-size: 12px; font-weight: 700">3</span>
+                                                    </td>
+                                                    <td style="padding-left: 12px">
+                                                        <span style="color: #e5e5e5; font-size: 14px">Set your password and access the platform</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- CTA Button -->
+                        <tr>
+                            <td align="center" style="padding: 32px 40px">
+                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td
+                                            style="
+                                                background: linear-gradient(135deg, #10b981, #059669);
+                                                border-radius: 10px;
+                                                text-align: center;
+                                            "
+                                        >
+                                            <a
+                                                href="{{ action_url | default('#') }}"
+                                                style="
+                                                    display: inline-block;
+                                                    padding: 16px 40px;
+                                                    color: #ffffff;
+                                                    font-size: 16px;
+                                                    font-weight: 600;
+                                                    text-decoration: none;
+                                                    letter-spacing: 0.5px;
+                                                "
+                                            >
+                                                {{ action_text | default('Complete Onboarding') }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p style="color: #525252; font-size: 12px; margin: 16px 0 0 0">
+                                    This invitation link expires in 7 days
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Security Note -->
+                        <tr>
+                            <td style="padding: 0 40px 32px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #1c1917;
+                                        border-radius: 8px;
+                                        border-left: 3px solid #f59e0b;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 16px">
+                                            <p style="color: #fbbf24; font-size: 12px; font-weight: 600; margin: 0 0 4px 0">
+                                                🔒 Security Notice
+                                            </p>
+                                            <p style="color: #a3a3a3; font-size: 12px; margin: 0; line-height: 1.5">
+                                                If you didn't expect this invitation or have questions, please contact our HR team immediately.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td
+                                style="
+                                    background-color: #0a0a0a;
+                                    padding: 24px 40px;
+                                    border-top: 1px solid #262626;
+                                "
+                            >
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <p style="color: #525252; font-size: 12px; margin: 0 0 8px 0">
+                                                Sent by {{ sender_name | default('The HR Team') }}
+                                            </p>
+                                            <p style="color: #404040; font-size: 11px; margin: 0">
+                                                © {{ year }} {{ company_name | default('HRMS Cloud Platform') }}. All rights reserved.
+                                            </p>
+                                        </td>
+                                        <td align="right">
+                                            <p style="color: #404040; font-size: 11px; margin: 0">
+                                                Need help? Contact support
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

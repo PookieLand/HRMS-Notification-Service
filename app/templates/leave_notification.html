@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>{{ title | default('Leave Notification') }}</title>
+        <!--[if mso]>
+            <noscript>
+                <xml>
+                    <o:OfficeDocumentSettings>
+                        <o:PixelsPerInch>96</o:PixelsPerInch>
+                    </o:OfficeDocumentSettings>
+                </xml>
+            </noscript>
+        <![endif]-->
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+        </style>
+    </head>
+    <body
+        style="
+            margin: 0;
+            padding: 0;
+            background-color: #09090b;
+            font-family:
+                'IBM Plex Sans',
+                -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                Roboto,
+                sans-serif;
+        "
+    >
+        <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #09090b"
+        >
+            <tr>
+                <td align="center" style="padding: 40px 20px">
+                    <table
+                        role="presentation"
+                        width="600"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="
+                            background-color: #111111;
+                            border-radius: 16px;
+                            overflow: hidden;
+                            border: 1px solid #27272a;
+                        "
+                    >
+                        <!-- Status Header -->
+                        <tr>
+                            <td
+                                style="
+                                    height: 6px;
+                                    {% if status == 'approved' %}
+                                    background: linear-gradient(90deg, #22c55e, #16a34a, #15803d);
+                                    {% elif status == 'rejected' %}
+                                    background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+                                    {% elif status == 'pending' %}
+                                    background: linear-gradient(90deg, #f59e0b, #d97706, #b45309);
+                                    {% else %}
+                                    background: linear-gradient(90deg, #3b82f6, #2563eb, #1d4ed8);
+                                    {% endif %}
+                                "
+                            ></td>
+                        </tr>
+
+                        <!-- Header Section -->
+                        <tr>
+                            <td style="padding: 40px 40px 24px 40px">
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <!-- Status Badge -->
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            {% if status == 'approved' %}
+                                                            background-color: rgba(34, 197, 94, 0.15);
+                                                            border: 1px solid rgba(34, 197, 94, 0.3);
+                                                            {% elif status == 'rejected' %}
+                                                            background-color: rgba(239, 68, 68, 0.15);
+                                                            border: 1px solid rgba(239, 68, 68, 0.3);
+                                                            {% elif status == 'pending' %}
+                                                            background-color: rgba(245, 158, 11, 0.15);
+                                                            border: 1px solid rgba(245, 158, 11, 0.3);
+                                                            {% else %}
+                                                            background-color: rgba(59, 130, 246, 0.15);
+                                                            border: 1px solid rgba(59, 130, 246, 0.3);
+                                                            {% endif %}
+                                                            border-radius: 6px;
+                                                            padding: 6px 14px;
+                                                        "
+                                                    >
+                                                        <span
+                                                            style="
+                                                                {% if status == 'approved' %}
+                                                                color: #4ade80;
+                                                                {% elif status == 'rejected' %}
+                                                                color: #f87171;
+                                                                {% elif status == 'pending' %}
+                                                                color: #fbbf24;
+                                                                {% else %}
+                                                                color: #60a5fa;
+                                                                {% endif %}
+                                                                font-size: 12px;
+                                                                font-weight: 600;
+                                                                text-transform: uppercase;
+                                                                letter-spacing: 1px;
+                                                            "
+                                                        >
+                                                            {% if status == 'approved' %}
+                                                            ✓ Approved
+                                                            {% elif status == 'rejected' %}
+                                                            ✕ Not Approved
+                                                            {% elif status == 'pending' %}
+                                                            ◷ Pending Review
+                                                            {% else %}
+                                                            Leave Update
+                                                            {% endif %}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td align="right">
+                                            <!-- Calendar Icon -->
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            width: 48px;
+                                                            height: 48px;
+                                                            {% if status == 'approved' %}
+                                                            background: linear-gradient(135deg, #22c55e, #16a34a);
+                                                            {% elif status == 'rejected' %}
+                                                            background: linear-gradient(135deg, #ef4444, #dc2626);
+                                                            {% elif status == 'pending' %}
+                                                            background: linear-gradient(135deg, #f59e0b, #d97706);
+                                                            {% else %}
+                                                            background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                                            {% endif %}
+                                                            border-radius: 12px;
+                                                            text-align: center;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        <span style="font-size: 24px">📅</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Main Title -->
+                        <tr>
+                            <td style="padding: 0 40px 16px 40px">
+                                <h1
+                                    style="
+                                        color: #ffffff;
+                                        font-size: 26px;
+                                        font-weight: 700;
+                                        margin: 0;
+                                        letter-spacing: -0.5px;
+                                    "
+                                >
+                                    {{ title | default('Leave Request Update') }}
+                                </h1>
+                            </td>
+                        </tr>
+
+                        <!-- Greeting and Message -->
+                        <tr>
+                            <td style="padding: 0 40px 24px 40px">
+                                <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7; margin: 0">
+                                    Hello <span style="color: #ffffff; font-weight: 500">{{ username | default('Team Member') }}</span>,
+                                </p>
+                                <p style="color: #a1a1aa; font-size: 15px; line-height: 1.7; margin: 12px 0 0 0">
+                                    {{ message | default('Here is an update regarding your leave request.') }}
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Leave Details Card -->
+                        <tr>
+                            <td style="padding: 0 40px 24px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #18181b;
+                                        border-radius: 12px;
+                                        border: 1px solid #27272a;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 24px">
+                                            <p
+                                                style="
+                                                    color: #71717a;
+                                                    font-size: 11px;
+                                                    font-weight: 600;
+                                                    text-transform: uppercase;
+                                                    letter-spacing: 1.5px;
+                                                    margin: 0 0 20px 0;
+                                                "
+                                            >
+                                                Leave Details
+                                            </p>
+
+                                            {% if details %}
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                {% for key, value in details.items() %}
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            padding: 12px 0;
+                                                            {% if not loop.last %}border-bottom: 1px solid #27272a;{% endif %}
+                                                        "
+                                                    >
+                                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td style="width: 45%">
+                                                                    <span style="color: #71717a; font-size: 14px">{{ key }}</span>
+                                                                </td>
+                                                                <td style="width: 55%; text-align: right">
+                                                                    <span
+                                                                        style="
+                                                                            color: #ffffff;
+                                                                            font-size: 14px;
+                                                                            font-weight: 500;
+                                                                            {% if key == 'Status' %}
+                                                                                {% if value == 'Approved' %}
+                                                                                color: #4ade80;
+                                                                                {% elif value == 'Rejected' or value == 'Not Approved' %}
+                                                                                color: #f87171;
+                                                                                {% elif value == 'Pending' %}
+                                                                                color: #fbbf24;
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        "
+                                                                    >
+                                                                        {{ value }}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </table>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Date Range Visual (for approved/pending) -->
+                        {% if start_date and end_date %}
+                        <tr>
+                            <td style="padding: 0 40px 24px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background: linear-gradient(135deg, #1e1e1e 0%, #171717 100%);
+                                        border-radius: 12px;
+                                        border: 1px solid #27272a;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 20px 24px">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="width: 45%; text-align: center">
+                                                        <p style="color: #71717a; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0">
+                                                            From
+                                                        </p>
+                                                        <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0">
+                                                            {{ start_date }}
+                                                        </p>
+                                                    </td>
+                                                    <td style="width: 10%; text-align: center">
+                                                        <span style="color: #52525b; font-size: 20px">→</span>
+                                                    </td>
+                                                    <td style="width: 45%; text-align: center">
+                                                        <p style="color: #71717a; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0">
+                                                            To
+                                                        </p>
+                                                        <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0">
+                                                            {{ end_date }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- Rejection Reason (if rejected) -->
+                        {% if status == 'rejected' and rejection_reason %}
+                        <tr>
+                            <td style="padding: 0 40px 24px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: rgba(239, 68, 68, 0.1);
+                                        border-radius: 12px;
+                                        border: 1px solid rgba(239, 68, 68, 0.2);
+                                        border-left: 4px solid #ef4444;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 20px 24px">
+                                            <p style="color: #f87171; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0">
+                                                Reason
+                                            </p>
+                                            <p style="color: #fecaca; font-size: 14px; line-height: 1.6; margin: 0">
+                                                {{ rejection_reason }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- Approver/Reviewer Info -->
+                        {% if approved_by or rejected_by %}
+                        <tr>
+                            <td style="padding: 0 40px 24px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #18181b;
+                                        border-radius: 12px;
+                                        border: 1px solid #27272a;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 16px 24px">
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            width: 40px;
+                                                            height: 40px;
+                                                            {% if status == 'approved' %}
+                                                            background: linear-gradient(135deg, #22c55e, #16a34a);
+                                                            {% else %}
+                                                            background: linear-gradient(135deg, #ef4444, #dc2626);
+                                                            {% endif %}
+                                                            border-radius: 50%;
+                                                            text-align: center;
+                                                            vertical-align: middle;
+                                                        "
+                                                    >
+                                                        <span style="color: #ffffff; font-size: 18px">👤</span>
+                                                    </td>
+                                                    <td style="padding-left: 16px">
+                                                        <p style="color: #71717a; font-size: 12px; margin: 0 0 4px 0">
+                                                            {% if status == 'approved' %}Approved by{% else %}Reviewed by{% endif %}
+                                                        </p>
+                                                        <p style="color: #ffffff; font-size: 15px; font-weight: 500; margin: 0">
+                                                            {{ approved_by | default(rejected_by) | default('Your Manager') }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- CTA Button -->
+                        {% if action_url %}
+                        <tr>
+                            <td align="center" style="padding: 8px 40px 32px 40px">
+                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td
+                                            style="
+                                                {% if status == 'approved' %}
+                                                background: linear-gradient(135deg, #22c55e, #16a34a);
+                                                {% elif status == 'rejected' %}
+                                                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                                {% elif status == 'pending' %}
+                                                background: linear-gradient(135deg, #f59e0b, #d97706);
+                                                {% else %}
+                                                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                                {% endif %}
+                                                border-radius: 10px;
+                                                text-align: center;
+                                            "
+                                        >
+                                            <a
+                                                href="{{ action_url }}"
+                                                style="
+                                                    display: inline-block;
+                                                    padding: 14px 32px;
+                                                    color: #ffffff;
+                                                    font-size: 15px;
+                                                    font-weight: 600;
+                                                    text-decoration: none;
+                                                "
+                                            >
+                                                {{ action_text | default('View Details') }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        <!-- Help Section -->
+                        <tr>
+                            <td style="padding: 0 40px 32px 40px">
+                                <table
+                                    role="presentation"
+                                    width="100%"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    style="
+                                        background-color: #18181b;
+                                        border-radius: 8px;
+                                        border: 1px solid #27272a;
+                                    "
+                                >
+                                    <tr>
+                                        <td style="padding: 16px 20px">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="width: 24px; vertical-align: top">
+                                                        <span style="font-size: 16px">💡</span>
+                                                    </td>
+                                                    <td style="padding-left: 12px">
+                                                        <p style="color: #a1a1aa; font-size: 13px; line-height: 1.6; margin: 0">
+                                                            {% if status == 'rejected' %}
+                                                            If you have questions about this decision, please reach out to your manager or HR department.
+                                                            {% elif status == 'pending' %}
+                                                            Your request is being reviewed. You'll receive another notification once a decision is made.
+                                                            {% else %}
+                                                            If you have any questions, please contact your HR department.
+                                                            {% endif %}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td
+                                style="
+                                    background-color: #0a0a0a;
+                                    padding: 24px 40px;
+                                    border-top: 1px solid #27272a;
+                                "
+                            >
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <p style="color: #52525b; font-size: 12px; margin: 0 0 4px 0">
+                                                {{ company_name | default('HRMS Cloud Platform') }}
+                                            </p>
+                                            <p style="color: #3f3f46; font-size: 11px; margin: 0">
+                                                This is an automated notification. Please do not reply directly to this email.
+                                            </p>
+                                        </td>
+                                        <td align="right" style="vertical-align: bottom">
+                                            <p style="color: #3f3f46; font-size: 11px; margin: 0">
+                                                © {{ year }} All rights reserved
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

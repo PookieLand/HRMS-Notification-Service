@@ -1,7 +1,5 @@
 from typing import List
 
-from pydantic import SecretStr
-from pydantic.networks import AnyUrl
 from pydantic_settings import BaseSettings
 
 
@@ -25,7 +23,34 @@ class Settings(BaseSettings):
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]
 
+    # ==========================================
+    # Kafka Settings
+    # ==========================================
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    KAFKA_CONSUMER_GROUP_ID: str = "notification-service-consumer"
+    KAFKA_AUTO_OFFSET_RESET: str = "earliest"
+    KAFKA_ENABLE_AUTO_COMMIT: bool = False
+    KAFKA_MAX_POLL_INTERVAL_MS: int = 300000
+    KAFKA_SESSION_TIMEOUT_MS: int = 45000
+    KAFKA_HEARTBEAT_INTERVAL_MS: int = 15000
+
+    # ==========================================
+    # Redis Settings
+    # ==========================================
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_PASSWORD: str = ""
+
+    # Cache TTL Settings (in seconds)
+    CACHE_TTL_PREFERENCES: int = 3600  # 1 hour
+    CACHE_TTL_TEMPLATES: int = 3600  # 1 hour
+    CACHE_TTL_METRICS: int = 300  # 5 minutes
+    CACHE_TTL_DEDUP: int = 86400  # 24 hours
+
+    # ==========================================
     # Email Provider Settings
+    # ==========================================
     # Options: "ses", "smtp", "hybrid"
     # - "ses": Use only Amazon SES
     # - "smtp": Use only Gmail SMTP
@@ -53,6 +78,10 @@ class Settings(BaseSettings):
     # Notification Settings
     MAX_RETRIES: int = 3
     RETRY_DELAY_SECONDS: int = 300
+
+    # Rate Limiting Settings
+    RATE_LIMIT_MAX_REQUESTS: int = 100  # Max emails per window
+    RATE_LIMIT_WINDOW_SECONDS: int = 3600  # 1 hour window
 
     # Fallback Settings
     ENABLE_FALLBACK: bool = True  # Enable fallback to secondary provider
@@ -97,6 +126,16 @@ class Settings(BaseSettings):
     def smtp_configured(self) -> bool:
         """Check if SMTP is properly configured."""
         return bool(self.SMTP_USER and self.SMTP_APP_PASSWORD)
+
+    @property
+    def kafka_configured(self) -> bool:
+        """Check if Kafka is properly configured."""
+        return bool(self.KAFKA_BOOTSTRAP_SERVERS)
+
+    @property
+    def redis_configured(self) -> bool:
+        """Check if Redis is properly configured."""
+        return bool(self.REDIS_HOST and self.REDIS_PORT)
 
     # Asgardeo OAuth2 Settings
     ASGARDEO_ORG: str = ""  # REQUIRED: Must be set in .env file
