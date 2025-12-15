@@ -26,6 +26,7 @@ from app.core.events import (
     OnboardingCompletedEvent,
     OnboardingFailedEvent,
     OnboardingInitiatedEvent,
+    OnboardingInvitationSentEvent,
     OvertimeAlertEvent,
     PerformanceReviewDueEvent,
     ProbationEndingEvent,
@@ -152,6 +153,52 @@ class NotificationEventHandlers:
 
         except Exception as e:
             logger.error(f"Error handling onboarding initiated event: {e}")
+
+    async def handle_invitation_email(self, event_data: dict[str, Any]) -> None:
+        """Handle invitation email event - send invitation to new employee."""
+        try:
+            envelope = EventEnvelope(**event_data)
+            data = OnboardingInvitationSentEvent(**envelope.data)
+
+            if self._check_duplicate(envelope.event_id):
+                logger.debug(f"Duplicate event {envelope.event_id}, skipping")
+                return
+
+            logger.info(f"Sending invitation email to {data.email}")
+
+            success = await send_reminder(
+                to_email=data.email,
+                username=data.email,  # We don't have first/last name yet
+                subject="You're Invited to Join Our Team!",
+                reminder_title="Complete Your Onboarding",
+                reminder_message=(
+                    f"Welcome! You have been invited to join our team as {data.role}. "
+                    f"Please click the button below to complete your account setup and start your journey with us."
+                ),
+                due_date=data.expires_at.strftime("%Y-%m-%d")
+                if data.expires_at
+                else None,
+                urgency="medium",
+                details={
+                    "Position": data.job_title,
+                    "Role": data.role,
+                },
+                action_url=data.invitation_link,
+                action_text="Complete Onboarding",
+            )
+
+            if success:
+                self._publish_notification_sent(
+                    notification_type=NotificationType.INVITATION,
+                    recipient_email=data.email,
+                    recipient_name=data.email,
+                    subject="You're Invited to Join Our Team!",
+                    related_event_id=envelope.event_id,
+                    related_event_type=envelope.event_type,
+                )
+
+        except Exception as e:
+            logger.error(f"Error handling invitation email event: {e}")
 
     async def handle_onboarding_completed(self, event_data: dict[str, Any]) -> None:
         """Handle onboarding completed event - send welcome email."""
@@ -872,21 +919,18 @@ def get_topic_handlers() -> dict[str, callable]:
         return wrapper
 
     return {
-        # Onboarding topics
-        KafkaTopics.USER_ONBOARDING_INITIATED: wrap_async_handler(
-            handlers.handle_onboarding_initiated
+        # Onboarding topics - direct notification triggers
+        KafkaTopics.NOTIFICATION_INVITATION_EMAIL: wrap_async_handler(
+            handlers.handle_invitation_email
+        ),
+        KafkaTopics.NOTIFICATION_WELCOME_EMAIL: wrap_async_handler(
+            handlers.handle_onboarding_completed
         ),
         KafkaTopics.USER_ONBOARDING_COMPLETED: wrap_async_handler(
             handlers.handle_onboarding_completed
         ),
         KafkaTopics.USER_ONBOARDING_FAILED: wrap_async_handler(
             handlers.handle_onboarding_failed
-        ),
-        KafkaTopics.NOTIFICATION_INVITATION_EMAIL: wrap_async_handler(
-            handlers.handle_onboarding_initiated
-        ),
-        KafkaTopics.NOTIFICATION_WELCOME_EMAIL: wrap_async_handler(
-            handlers.handle_onboarding_completed
         ),
         # Employee lifecycle topics
         KafkaTopics.EMPLOYEE_CREATED: wrap_async_handler(

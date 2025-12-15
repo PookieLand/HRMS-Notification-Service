@@ -103,6 +103,17 @@ class OnboardingInitiatedEvent(BaseModel):
     invitation_url: Optional[str] = None
 
 
+class OnboardingInvitationSentEvent(BaseModel):
+    """Event received when invitation email should be sent."""
+
+    invitation_token: str
+    email: EmailStr
+    role: str
+    job_title: str
+    invitation_link: str
+    expires_at: datetime
+
+
 class OnboardingCompletedEvent(BaseModel):
     """Event received when onboarding is completed."""
 
