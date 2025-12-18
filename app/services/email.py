@@ -150,7 +150,6 @@ async def send_email_message(
         message,
         hostname=settings.SMTP_HOST,
         port=settings.SMTP_PORT,
-        use_tls=settings.SMTP_USE_TLS,
         username=settings.SMTP_USER,
         password=settings.SMTP_APP_PASSWORD,
     )
@@ -229,7 +228,6 @@ async def send_templated_email(
             message,
             hostname=settings.SMTP_HOST,
             port=settings.SMTP_PORT,
-            use_tls=settings.SMTP_USE_TLS,
             username=settings.SMTP_USER,
             password=settings.SMTP_APP_PASSWORD,
         )

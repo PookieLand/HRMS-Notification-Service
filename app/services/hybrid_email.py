@@ -145,7 +145,6 @@ class HybridEmailService:
                 message,
                 hostname=settings.SMTP_HOST,
                 port=settings.SMTP_PORT,
-                use_tls=settings.SMTP_USE_TLS,
                 username=settings.SMTP_USER,
                 password=settings.SMTP_APP_PASSWORD,
             )
