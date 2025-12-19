@@ -148,8 +148,8 @@ app.add_middleware(
 
 
 # Include routers
-app.include_router(notifications_router, prefix="/api/v1/notifications")
-app.include_router(internal_router, prefix="/api/v1/notifications")
+app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(internal_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["health"])
